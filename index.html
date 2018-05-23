@@ -12,7 +12,7 @@
     <script>
         var btn = document.getElementById('btn');
         btn.addEventListener("click", function() {
-            navigator.usb.requestDevice({ filters: [{ vendorId: 10821 }] })
+            navigator.usb.requestDevice({ filters: [{ vendorId: 0x067b }] })
             .then(device => {
             console.log(device.productName);      // "Arduino Micro"
             console.log(device.manufacturerName); // "Arduino LLC"
