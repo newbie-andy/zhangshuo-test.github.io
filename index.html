@@ -7,25 +7,39 @@
     <title>Document</title>
 </head>
 <body>
-    <p>hello!</p>
-    <button id="btn">获取USB</button>
+    <section id="portList"></section>
+    <button id="open">获取</button>
     <script>
-        var btn = document.getElementById('btn');
-        btn.addEventListener("click", function() {
-            navigator.usb.requestDevice({ filters: [{ vendorId: 0x067b }] })
-            .then(device => {
-            console.log(device.productName);      // "Arduino Micro"
-            console.log(device.manufacturerName); // "Arduino LLC"
-            })
-            .catch(error => { console.log(error); });
-            // navigator.usb.getDevices().then(devices => {
-            //     devices.map(device => {
-            //         console.log(device.productName);      // "Arduino Micro"
-            //         console.log(device.manufacturerName); // "Arduino LLC"
-            //     });
-            // })
-        })
-        
+        var connectionId;
+        $(document).ready(function() {
+            chrome.serial.getDevices(function(devices) {
+
+                for (var i = 0; i < devices.length; i++) {
+                    $('select#portList').append('<option value="' + devices[i].path + '">' + devices[i].path + '</option>');
+                }
+            });
+
+            // ui hook
+            $('button#open').click(function() {
+                var clicks = $(this).data('clicks');
+
+                if (!clicks) {
+                    var port = $('select#portList').val();
+                    chrome.serial.connect(port, {bitrate: 9600}, function(info) {
+                        connectionId = info.connectionId;
+                        $("button#open").html("Close Port");
+                        console.log('Connection opened with id: ' + connectionId + ', Bitrate: ' + info.bitrate);
+                    });
+                } else {
+                    chrome.serial.disconnect(connectionId, function(result) {
+                        $("button#open").html("Open Port");
+                        console.log('Connection with id: ' + connectionId + ' closed');
+                    });
+                }
+
+                $(this).data("clicks", !clicks);
+            });
+        });
     </script>
 </body>
 </html>
