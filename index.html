@@ -17,11 +17,11 @@
                 console.log(device.manufacturerName); // "Arduino LLC"
             })
             .catch(error => { console.log(error); });
-
-            navigator.usb.addEventListener('connect', event => {
-                console.log(1);
-            });
         })
+
+        navigator.usb.addEventListener('connect', event => {
+            console.log(1);
+        });
     </script>
 </body>
 </html>
