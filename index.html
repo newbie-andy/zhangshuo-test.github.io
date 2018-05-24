@@ -20,7 +20,7 @@
         
         </select></td></tr>
         <tr><td width="80">波特率：</td><td><select id="sbtl">
-                <!-- <option value="300">300</option>
+                <option value="300">300</option>
                 <option value="600">600</option>
                 <option value="1200">1200</option>
                 <option value="2400">2400</option>
@@ -29,7 +29,7 @@
                 <option value="19200">19200</option>
                 <option value="38400">38400</option>
                 <option value="57600">57600</option>
-                <option value="115200" selected="">115200</option> -->
+                <option value="115200" selected="">115200</option>
                 
             </select></td></tr>
         <tr><td>数据位：</td><td><select id="ssjw">
@@ -91,6 +91,8 @@
         }
         function comlist() {
             var objTComm = new TComm("COM1", "9600,N,8,1");
+            console.log('杀了你');
+            console.log(objTComm);
             objTComm.Register("9060a7236f9a5ed7c764983a826076ebf6dfa1f115611d3934c58749de06036233bd174ef8756ec99f8b526d113733c2839427307b72ad00c6e9c18b0fa62918439522399f65257d", function (dat) {
                 console.log(dat);
                     if (dat.STAT == 11) {
