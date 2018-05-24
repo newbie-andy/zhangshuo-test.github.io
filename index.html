@@ -15,7 +15,6 @@
                         var tcom=null;
                         $(function(){
                             comlist();
-                            console.log(1);
                         })
                         function closeCom(){
                             tcom.Close(function(){alert("已关闭")});
@@ -27,10 +26,10 @@
                                 tcom.Send($("#t_sdata").val(),function(dat){if(dat.STAT==1){alert("发送成功！")}else{alert(dat.STAT+"发送失败！")}});//往端口发送数据
                         }
                         function comlist() {
-                            var objTComm = new TComm("COM1", "9600,N,8,1");
+                            var objTComm = new TComm("COM3", "9600,N,8,1");
                             objTComm.Register("9060a7236f9a5ed7c764983a826076ebf6dfa1f115611d3934c58749de06036233bd174ef8756ec99f8b526d113733c2839427307b72ad00c6e9c18b0fa62918439522399f65257d", function (dat) {
-                                console.log(dat);
-                                    if (dat.STAT == 11) {
+                                dat.STAT = 11;
+                                if (dat.STAT == 11) {
                                     objTComm.getComList(function (dat) {
                                         if(dat.COMS.length>0){
                                     $(dat.COMS).each(function(i){
@@ -69,6 +68,7 @@
                                 if($("#t_dataIn").val().substr($("#t_dataIn").val().length-9)=="0000027A9")$("#t_dataIn").val($("#t_dataIn").val()+"\n");
                                 }
                                 tcom.Register("9060a7236f9a5ed7c764983a826076ebf6dfa1f115611d3934c58749de06036233bd174ef8756ec99f8b526d113733c2839427307b72ad00c6e9c18b0fa62918439522399f65257d", function (dat) {
+                                    dat.STAT == 11;
                                     if (dat==-99||dat.STAT == -99) {
                                         if (confirm("您还没有安装串口插件\n\n现在下载安装吗？")) {
                                             location = "http://d.iyanhong.com/files/TComm2.exe";
