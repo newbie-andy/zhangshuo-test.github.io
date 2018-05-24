@@ -4,11 +4,89 @@
         <title>web调用comm插件,web串口调试助手,web串口通信</title>
         <meta name="Keywords" content="IE调用comm,web调用comm,activex,串口设备访问,web串口通信">
         <meta name="Description" content="可以用于web系统调用串口设备,web串口通信,可对接电子秤 地磅 条码枪 二维码枪等设备。">
+        <script src="js/jquery.js"></script>
+        <script src="js/run.js"></script>
         <style>
         td{font-size:12px;}
         </style>
         </head>
         <body style="margin:0;padding:0;" scroll="no">
+                <script>
+                        var tcom=null;
+                        $(function(){
+                            comlist();
+                        })
+                        function closeCom(){
+                            tcom.Close(function(){alert("已关闭")});
+                        }
+                        function send(){
+                            if(CUR_SJT!="HEX")
+                                tcom.Send($("#t_sdata").val()+"\r",function(dat){if(dat.STAT==1){alert("发送成功！")}else{alert("发送失败！")}});//往端口发送数据
+                            else
+                                tcom.Send($("#t_sdata").val(),function(dat){if(dat.STAT==1){alert("发送成功！")}else{alert(dat.STAT+"发送失败！")}});//往端口发送数据
+                        }
+                        function comlist() {
+                            var objTComm = new TComm("COM1", "9600,N,8,1");
+                            objTComm.Register("9060a7236f9a5ed7c764983a826076ebf6dfa1f115611d3934c58749de06036233bd174ef8756ec99f8b526d113733c2839427307b72ad00c6e9c18b0fa62918439522399f65257d", function (dat) {
+                                console.log(dat);
+                                    if (dat.STAT == 11) {
+                                    objTComm.getComList(function (dat) {
+                                        if(dat.COMS.length>0){
+                                    $(dat.COMS).each(function(i){
+                                        $("<option value='"+dat.COMS[i].PName.substr(3)+"'>"+dat.COMS[i].PName+"("+dat.COMS[i].FName+")"+"</option>").insertBefore($("#COMLI option:first"))
+                                    })
+                                    document.getElementById("COMLI").selectedIndex=0;
+                                }
+                                    });}
+                            });
+                        }
+                        //选择并打开端口
+                        var CUR_SJT = "";
+                        function selcomport() {//tcom.SelectComm()
+                            CUR_SJT = $("#ssjt").val();
+                            var comNo = 0;
+                            if ($("#COMLI").val() != "-1") {
+                                comNo = $("#COMLI").val();
+                            } else {
+                                //comNo=tcom.SelectComm();
+                                alert("请选择串口！"); return;
+                            }
+                            var comSet = $("#sbtl").val() + "," + $("#sjyw").val() + "," + $("#ssjw").val() + "," + $("#stzw").val();
+                            if ($("#btnOpen").val() == "关闭串口") {
+                                closeCom();
+                                $("#btnOpen").val("打开串口");
+                                return;
+                            } else {
+                                tcom = new TComm(comNo, comSet, $("#ssjt").val(),5);
+                                tcom.OnDataIn = function (dat) { //接收串口返回数据
+                                if ($("#t_dataIn").val().length > 10000) $("#t_dataIn").val("");
+                                    if (CUR_SJT == "hex") {
+                                        $("#t_dataIn").val($("#t_dataIn").val() +"\n" + dat.data);
+                                    } else {
+                                        $("#t_dataIn").val($("#t_dataIn").val() +"\n" + dat.data);
+                                    }
+                                if($("#t_dataIn").val().substr($("#t_dataIn").val().length-9)=="0000027A9")$("#t_dataIn").val($("#t_dataIn").val()+"\n");
+                                }
+                                tcom.Register("9060a7236f9a5ed7c764983a826076ebf6dfa1f115611d3934c58749de06036233bd174ef8756ec99f8b526d113733c2839427307b72ad00c6e9c18b0fa62918439522399f65257d", function (dat) {
+                                    if (dat==-99||dat.STAT == -99) {
+                                        if (confirm("您还没有安装串口插件\n\n现在下载安装吗？")) {
+                                            location = "http://d.iyanhong.com/files/TComm2.exe";
+                                        }
+                                    } else if (dat.STAT == 11) {
+                                        tcom.init(function (ret) {
+                                            if (ret.STAT == 1) {
+                                                $("#btnSend").attr("disabled", false); $("#btnOpen").val("关闭串口");
+                                            } else {
+                                                alert("打开串口失败!");
+                                            }
+                                        });
+                                    } else {
+                                        alert("注册失败,请与您的服务商联系!");
+                                    }
+                                });
+                            }
+                        }
+                    </script>
         <table width="100%" height="100%" cellpadding="0" cellspacing="0">
         <tbody><tr><td height="30" style="border-bottom:solid 1px #ccc;">如需购买请联系QQ:19937243; E-Mail:nxiaoping@163.com
         <a href="/">更多插件</a></td></tr>
@@ -73,86 +151,6 @@
         </tr></tbody></table>
         </td></tr>
         </tbody></table>
-        <script src="js/jquery.js"></script>
-        <script src="js/run.js"></script>
-        <script>
-            var tcom=null;
-            $(function(){
-                comlist();
-            })
-            function closeCom(){
-                tcom.Close(function(){alert("已关闭")});
-            }
-            function send(){
-                if(CUR_SJT!="HEX")
-                    tcom.Send($("#t_sdata").val()+"\r",function(dat){if(dat.STAT==1){alert("发送成功！")}else{alert("发送失败！")}});//往端口发送数据
-                else
-                    tcom.Send($("#t_sdata").val(),function(dat){if(dat.STAT==1){alert("发送成功！")}else{alert(dat.STAT+"发送失败！")}});//往端口发送数据
-            }
-            function comlist() {
-                // var objTComm = new TComm("COM1", "9600,N,8,1");
-                // console.log('杀了你');
-                // console.log(objTComm);
-                // objTComm.Register("9060a7236f9a5ed7c764983a826076ebf6dfa1f115611d3934c58749de06036233bd174ef8756ec99f8b526d113733c2839427307b72ad00c6e9c18b0fa62918439522399f65257d", function (dat) {
-                //     console.log(dat);
-                //         if (dat.STAT == 11) {
-                //         objTComm.getComList(function (dat) {
-                //             if(dat.COMS.length>0){
-                //         $(dat.COMS).each(function(i){
-                //             $("<option value='"+dat.COMS[i].PName.substr(3)+"'>"+dat.COMS[i].PName+"("+dat.COMS[i].FName+")"+"</option>").insertBefore($("#COMLI option:first"))
-                //         })
-                //         document.getElementById("COMLI").selectedIndex=0;
-                //     }
-                //         });}
-                // });
-                console.log(1);
-            }
-            //选择并打开端口
-            var CUR_SJT = "";
-            function selcomport() {//tcom.SelectComm()
-                CUR_SJT = $("#ssjt").val();
-                var comNo = 0;
-                if ($("#COMLI").val() != "-1") {
-                    comNo = $("#COMLI").val();
-                } else {
-                    //comNo=tcom.SelectComm();
-                    alert("请选择串口！"); return;
-                }
-                var comSet = $("#sbtl").val() + "," + $("#sjyw").val() + "," + $("#ssjw").val() + "," + $("#stzw").val();
-                if ($("#btnOpen").val() == "关闭串口") {
-                    closeCom();
-                    $("#btnOpen").val("打开串口");
-                    return;
-                } else {
-                    tcom = new TComm(comNo, comSet, $("#ssjt").val(),5);
-                    tcom.OnDataIn = function (dat) { //接收串口返回数据
-                    if ($("#t_dataIn").val().length > 10000) $("#t_dataIn").val("");
-                        if (CUR_SJT == "hex") {
-                            $("#t_dataIn").val($("#t_dataIn").val() +"\n" + dat.data);
-                        } else {
-                            $("#t_dataIn").val($("#t_dataIn").val() +"\n" + dat.data);
-                        }
-                    if($("#t_dataIn").val().substr($("#t_dataIn").val().length-9)=="0000027A9")$("#t_dataIn").val($("#t_dataIn").val()+"\n");
-                    }
-                    tcom.Register("9060a7236f9a5ed7c764983a826076ebf6dfa1f115611d3934c58749de06036233bd174ef8756ec99f8b526d113733c2839427307b72ad00c6e9c18b0fa62918439522399f65257d", function (dat) {
-                        if (dat==-99||dat.STAT == -99) {
-                            if (confirm("您还没有安装串口插件\n\n现在下载安装吗？")) {
-                                location = "http://d.iyanhong.com/files/TComm2.exe";
-                            }
-                        } else if (dat.STAT == 11) {
-                            tcom.init(function (ret) {
-                                if (ret.STAT == 1) {
-                                    $("#btnSend").attr("disabled", false); $("#btnOpen").val("关闭串口");
-                                } else {
-                                    alert("打开串口失败!");
-                                }
-                            });
-                        } else {
-                            alert("注册失败,请与您的服务商联系!");
-                        }
-                    });
-                }
-            }
-        </script>
+        
         </body>
 </html>
