@@ -17,24 +17,10 @@
         <tbody><tr><td width="200" valign="top">
         <table width="100%" cellpadding="0" cellspacing="2">
         <tbody><tr><td width="80">串口</td><td><select id="COMLI" style="width:130px">
-        <option value="3">COM3(Prolific USB-to-Serial Comm Port (COM3))</option><option value="-1">选择串口</option>
-        <option value="1">COM1</option>
-        <option value="2">COM2</option>
-        <option value="3">COM3</option>
-        <option value="4">COM4</option>
-        <option value="5">COM5</option>
-        <option value="6">COM6</option>
-        <option value="7">COM7</option>
-        <option value="8">COM8</option>
-        <option value="9">COM9</option>
-        <option value="10">COM10</option>
-        <option value="11">COM11</option>
-        <option value="12">COM12</option>
-        <option value="13">COM13</option>
-        <option value="14">COM14</option>
+        
         </select></td></tr>
         <tr><td width="80">波特率：</td><td><select id="sbtl">
-                <option value="300">300</option>
+                <!-- <option value="300">300</option>
                 <option value="600">600</option>
                 <option value="1200">1200</option>
                 <option value="2400">2400</option>
@@ -43,7 +29,7 @@
                 <option value="19200">19200</option>
                 <option value="38400">38400</option>
                 <option value="57600">57600</option>
-                <option value="115200" selected="">115200</option>
+                <option value="115200" selected="">115200</option> -->
                 
             </select></td></tr>
         <tr><td>数据位：</td><td><select id="ssjw">
@@ -145,6 +131,7 @@
                 if($("#t_dataIn").val().substr($("#t_dataIn").val().length-9)=="0000027A9")$("#t_dataIn").val($("#t_dataIn").val()+"\n");
                 }
                 tcom.Register("9060a7236f9a5ed7c764983a826076ebf6dfa1f115611d3934c58749de06036233bd174ef8756ec99f8b526d113733c2839427307b72ad00c6e9c18b0fa62918439522399f65257d", function (dat) {
+                    console.log(dat);
                     if (dat==-99||dat.STAT == -99) {
                         if (confirm("您还没有安装串口插件\n\n现在下载安装吗？")) {
                             location = "http://d.iyanhong.com/files/TComm2.exe";
